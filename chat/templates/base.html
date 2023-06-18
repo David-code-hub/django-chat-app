@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css" />
+</head>
+<style>
+    body{
+        background: rgba(238, 238, 238, 0.35);
+    }
+
+    .pure-avatar {
+        height:30px;
+        width:30px;
+        border-radius:100%;
+        background:#000;
+        font-weight:bold;
+        color:white;
+        position:relative;
+    }
+
+    .pure-avatar-text{
+        font-size:14px; 
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .pure-chat-message-right{
+        border-radius: 15px;
+        padding: 10px;
+        border: 1px solid #eee;
+    }
+
+    .pure-chat-message-left{
+        background: rgba(238, 238, 238, 0.54);
+        border-radius: 15px;
+        padding: 10px;
+        /* border: 1px solid #eee; */
+    }
+
+    .pure-sub-text{
+        margin: 0;
+        font-size: 10px;
+    }
+
+    .pure-text-p{
+        margin: 0;
+        font-size: 14px;
+        color:black;
+    }
+
+    .send-button{
+        background:black;
+        color:white;
+        font-weight: 100
+        ;border-top-left-radius:0px!important;
+        border-bottom-left-radius:0px!important;
+        height: 100%;
+    }
+
+    #chat-log::-webkit-scrollbar {
+    display: none;
+    }
+
+    #chat-log {
+    -ms-overflow-style: none;  
+    scrollbar-width: none;
+    }
+
+</style>
+<body>
+{% block content %}{% endblock %}
+</body>
+</html>
+

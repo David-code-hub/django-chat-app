@@ -1,0 +1,34 @@
+{% extends '../base.html' %}
+{% block title %}Chat Room{% endblock %}
+{% block content %}
+
+    <div class="pure-g" style="padding:3em;">
+        <div class="pure-u-3-3 pure-u-sm-2-3 pure-u-lg-1-3" style="margin:auto;border-radius: 15px;padding: 1em;background:white">
+            <div class="pure-form">
+                <div class="pure-g">
+                    <p>What chat room would you like to enter?</p>
+                    <input id="room-name-input" class="pure-input-rounded pure-u-4-5"
+                    placeholder="Type something..."
+                    style="border-top-right-radius:0px;border-bottom-right-radius:0px;margin-bottom:0px;" type="text">
+                    <button type="button" id="room-name-submit" class="pure-u-1-5 pure-button pure-input-rounded send-button" >Enter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <script>
+        document.querySelector('#room-name-input').focus();
+        document.querySelector('#room-name-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#room-name-submit').click();
+            }
+        };
+
+        document.querySelector('#room-name-submit').onclick = function(e) {
+            var roomName = document.querySelector('#room-name-input').value;
+            window.location.pathname = '/chat/' + roomName + '/';
+        };
+    </script>
+{% endblock %}

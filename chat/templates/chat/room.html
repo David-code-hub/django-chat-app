@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block title %}{{room_name}}{% endblock %}
+{% block content %}
+    <div class="pure-g" style="padding:3em;">
+        <div class="pure-u-1 pure-u-sm-2-3 pure-u-lg-1-3" style="margin:auto;border-radius: 15px;padding: 1em;background:white">
+            <div class="pure-form">
+                <div style="height:300px;overflow:auto;" id="chat-log">
+                    <div style="text-align:center;width:100%;margin-top:100px;">
+                        <i class="fa-regular fa-comment-dots" style="font-size:3em;margin:auto;"></i>
+                        <p style="font-weight:bold;margin:0px;font-size:12px;">No messages,yet</p>
+                        <p style="font-size:10px;color:#ccc;font-weight:300;margin-top:5px;">Be he first to send a message!</p>
+
+                    </div>
+                   
+                </div>
+                <p id="isTypingText" class="animate__animated animate__fadeInUp"  style="height:20px;font-size: small;color: darkgrey;"></p>
+                <div class="pure-g">
+                    <input id="chat-message-input" 
+                        class="pure-input-rounded pure-u-4-5"
+                        placeholder="Type something..."
+                        style="border-top-right-radius:0px;border-bottom-right-radius:0px;margin-bottom:0px;" type="text">
+                    <button type="button"
+                        id="chat-message-submit" 
+                        onclick="clickEnter(event)" 
+                        class="pure-u-1-5 pure-button pure-input-rounded send-button">
+                        <i class="fa-regular fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+            {{ room_name|json_script:"room-name" }}
+            {{ user.username|default:"AnonymousUser"|json_script:"user"}}
+        </div>
+        <center style="width:100%;">
+            <p style="font-size:12px;">Tired of this room? <a href="{% url 'home' %}">Leave room</a></p>
+
+        </center>
+    </div>
+    <script>
+        const roomName = JSON.parse(document.getElementById('room-name').textContent);
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/chat/'
+            + roomName
+            + '/'
+        );
+
+        var user = JSON.parse(document.getElementById('user').textContent);
+        var isTyping = false
+        // if(user == '') user = 'AnonymousUser'
+        //note* all these functions behave as event listeners
+
+        //whenever there's a new message this function will trigger
+        //triggers when you send a message and when other users send a message
+        chatSocket.onmessage = function(e) {
+            let chatlog = document.querySelector('#chat-log')
+            const data = JSON.parse(e.data);
+            if(data.clickedSend &&  data.isTyping == false){
+                let animation = document.querySelectorAll('.animate__animated.animate__fadeIn');
+                animation.forEach(anime => {
+                    anime.classList.remove('animate__fadeIn');
+                });
+
+                if(user == data.username){
+                    chatlog.innerHTML += 
+                    `
+                    <div class="pure-g">
+                            <div class="pure-u-2-3 pure-g animate__animated animate__fadeIn" style="margin-right: 0;margin-left: auto;">
+                                    
+                                    <div class="pure-u-4-5" style="margin-right: 0;margin-left: auto;float: right;">
+                                    <div class="pure-chat-message-right">
+                                        <p class="pure-sub-text">You</p>
+                                        <p class="pure-text-p">${data.message}</p>
+                                    </div>
+                                    </div>
+                            </div>
+                        </div><br>
+                    `
+                }else{
+                    chatlog.innerHTML += 
+                    `
+                    <div class="pure-g">
+                            <div class="pure-u-2-3 animate__animated animate__fadeIn">
+                                <div class="pure-g">
+                                    <div class="pure-u-1-8">
+                                        <div class="pure-avatar">
+                                            <div class="pure-avatar-text">${data.username.charAt(0).toUpperCase()}</div>
+                                        </div>
+                                    </div>
+                                    <div class="pure-u-7-8" >
+                                    <div class="pure-chat-message-left">
+                                        <p class="pure-sub-text">${data.username}</p>
+                                        <p class="pure-text-p">${data.message}</p>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><br>
+                    `                    
+                }
+                chatlog.scrollTop = chatlog.scrollHeight;
+                document.querySelector('#isTypingText').innerHTML = ''
+            }else{
+                document.querySelector('#isTypingText').innerHTML = data.message
+                
+            }
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        //focuses on input field on page load
+        document.querySelector('#chat-message-input').focus();
+        //check if user clicked enter(13)
+        let timer
+        let clickedSend = false
+        function doneTyping(value) {
+        console.log(`The user is done typing: ${value}`);
+        }
+        function clickEnter(event){
+            event.keyCode = 13
+            isTyping = false
+            clickedSend = true
+            document.querySelector('#chat-message-submit').click();
+        }
+
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            clearTimeout(timer);
+            if (e.keyCode === 13) {  // enter, return
+                if(document.querySelector('#chat-message-input').value == ''){
+                    alert('Please type something!')
+                    return
+                }
+                clickEnter(e)
+            }else{
+                isTyping = true
+                clickedSend = false
+                document.querySelector('#chat-message-submit').click();
+                //detecting when user stops typing https://bobbyhadz.com/blog/detect-when-user-stops-typing-in-javascript
+                timer = setTimeout(() => {
+                    isTyping = false
+                    document.querySelector('#chat-message-submit').click();
+                }, 700);
+
+            }
+        };
+
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'isTyping':isTyping,
+                'username':user,
+                'clickedSend':clickedSend
+            })); 
+            if(clickedSend && isTyping == false)messageInputDom.value = '';
+        };
+    </script>
+{% endblock %}
