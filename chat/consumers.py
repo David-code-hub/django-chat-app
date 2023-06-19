@@ -1,18 +1,17 @@
 import json 
-from asgiref.sync import async_to_sync
+from asgiref.sync import async_to_sync,sync_to_async
 from channels.generic.websocket import WebsocketConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
+from .models import Message
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'chat_%s' % self.room_name #%s mean? https://www.geeksforgeeks.org/what-does-s-mean-in-a-python-format-string/
-
         #Join room group
         await self.channel_layer.group_add(
             self.room_group_name, self.channel_name
         )
-
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -27,6 +26,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         isTyping = text_data_json['isTyping']
         username = text_data_json['username']
         clickedSend = text_data_json['clickedSend']
+        print(isTyping)
+        if isTyping == False and clickedSend == True:
+            print('creating message...')
+            await sync_to_async(Message.objects.create)(room_name=self.room_name,username=username,message=message)
         #gets info and saves to channel layer group
         await self.channel_layer.group_send(
             self.room_group_name,{'type': 'chat_message','message': message,'isTyping':isTyping,'username':username,'clickedSend':clickedSend}
@@ -46,7 +49,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         #Send message to WebSocket
         await self.send(text_data = json.dumps({'message':message,'isTyping':isTyping,'clickedSend':clickedSend,'username':username}))
-    
+
 ###############################################
 ###########------PREVIOUS STEP------###########
 ###############################################
