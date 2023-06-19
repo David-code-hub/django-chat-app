@@ -3,7 +3,7 @@
 ![chatapp](https://github.com/David-code-hub/django-chat-app/assets/55393687/c48d8868-c090-4f13-89a6-c479136984a0)
 
 ### How i understand it💀
-I guess the confusing bit,for me,was understanding that django and websockets are independant hence they have different docs
+I guess the confusing bit,for me,was understanding that django and websockets are independant
 
 Web socket documentation : <https://developer.mozilla.org/en-US/docs/Web/API/WebSocket>
 
