@@ -18,7 +18,7 @@ class ChatConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_discard)(
             self.room_group_name, self.channel_name
         )
-
+    ##
     #Receive message from WebSocket
     def receive(self,text_data):
         text_data_json = json.loads(text_data)
