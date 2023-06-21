@@ -26,9 +26,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         isTyping = text_data_json['isTyping']
         username = text_data_json['username']
         clickedSend = text_data_json['clickedSend']
-        print(isTyping)
         if isTyping == False and clickedSend == True:
-            print('creating message...')
             await sync_to_async(Message.objects.create)(room_name=self.room_name,username=username,message=message)
         #gets info and saves to channel layer group
         await self.channel_layer.group_send(
@@ -46,7 +44,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     message = '' 
             else:
                 message = ''
-
         #Send message to WebSocket
         await self.send(text_data = json.dumps({'message':message,'isTyping':isTyping,'clickedSend':clickedSend,'username':username}))
 

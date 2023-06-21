@@ -78,6 +78,7 @@
             + roomName
             + '/'
         );
+        console.log(chatSocket)
 
         var user = JSON.parse(document.getElementById('user').textContent);
         var isTyping = false
@@ -143,6 +144,7 @@
 
         chatSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
+            console.log(e)
         };
 
         //focuses on input field on page load
