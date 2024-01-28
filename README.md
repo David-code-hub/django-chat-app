@@ -15,4 +15,3 @@ django channels : <https://channels.readthedocs.io/en/stable/introduction.html>
 ### Now how do these work together?
 
 Channels provide the backend functionality while web sockets handles the client/front-end side of things (meaning it’s always watching for new changes).
-
